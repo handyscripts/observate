@@ -1,0 +1,34 @@
+{% extends 'base.html' %} 
+
+{% block content %}
+<h1 class="display-4">Observate</h1>
+<div class="jumbotron">
+    <h2>Upload file</h2>
+	<p>Command to generate nmap xml output file:</p>
+
+    <div class="alert alert-secondary" role="alert" style="display:inline-block;">
+        <codes style="color: black;">nmap -oX out.xml -O &lt;options&gt; &lt;hosts&gt;</code>
+    </div>
+    {% if error_message %}
+    <div class="alert alert-danger" role="alert">
+        Error: {{ error_message }}
+    </div>
+    {% endif %}
+
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <div class="custom-file mb-3">
+            <input type="file" class="custom-file-input" id="customFile" name="file">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+        <script>
+            // Show name of the file on select
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+        </script>
+    </form>	
+</div>
+{% endblock %}

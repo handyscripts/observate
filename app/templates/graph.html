@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="{{ url_for('static', filename='js/vis-network.min.js') }}"></script>
+<style>
+	#mynetwork {
+		width: 100%;
+		height: 600px;
+		border: 1px solid lightgray;
+	}
+
+	html, body {
+		height: 100%;
+		margin: 0;
+	}
+
+	div.vis-network div.vis-navigation div.vis-button:hover {
+		box-shadow: 0px 0px 3px 3px rgba(102, 178, 255, 0.95);
+	}
+
+	div.vis-network div.vis-navigation div.vis-button.vis-up {
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='vis-icon' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='grey' stroke-width='2' stroke-linecap='square' stroke-linejoin='arcs'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M16 12l-4-4-4 4M12 16V9'/%3E%3C/svg%3E");
+	}
+	div.vis-network div.vis-navigation div.vis-button.vis-down{
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='vis-icon' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='grey' stroke-width='2' stroke-linecap='square' stroke-linejoin='arcs'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M16 12l-4 4-4-4M12 8v7'/%3E%3C/svg%3E");
+	}
+	div.vis-network div.vis-navigation div.vis-button.vis-left{
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='vis-icon' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='grey' stroke-width='2' stroke-linecap='square' stroke-linejoin='arcs'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8l-4 4 4 4M16 12H9'/%3E%3C/svg%3E");
+	}
+	div.vis-network div.vis-navigation div.vis-button.vis-right{
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='vis-icon' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='grey' stroke-width='2' stroke-linecap='square' stroke-linejoin='arcs'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8l4 4-4 4M8 12h7'/%3E%3C/svg%3E");
+	}
+	div.vis-network div.vis-navigation div.vis-button.vis-zoomIn{
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='vis-icon' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='grey' stroke-width='2' stroke-linecap='square' stroke-linejoin='arcs'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='16'/%3E%3Cline x1='8' y1='12' x2='16' y2='12'/%3E%3C/svg%3E");
+	}
+	div.vis-network div.vis-navigation div.vis-button.vis-zoomOut{
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='vis-icon' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='grey' stroke-width='2' stroke-linecap='square' stroke-linejoin='arcs'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='8' y1='12' x2='16' y2='12'/%3E%3C/svg%3E");
+	}
+	div.vis-network div.vis-navigation div.vis-button.vis-zoomExtends {
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='vis-icon' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='grey' stroke-width='2' stroke-linecap='square' stroke-linejoin='arcs'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M7.027 7.027l9.946 9.946m0-9.946l-9.946 9.946m6.792-10.43h3.64v3.64m-7.278-3.64h-3.64v3.64m7.278 7.278h3.64v-3.64m-7.278 3.64h-3.64v-3.64' stroke-width='1.6'/%3E%3C/svg%3E");
+	}
+
+</style>
+<main role="main" class="container">
+	<div style="position:relative;">
+		<a style="position:absolute; z-index: 999; top:1 px; left: 1px;" href="/scan/{{ filename }}" class="btn btn-secondary"><i class="far fa-arrow-alt-circle-left"></i> Back to Scan</a>
+		<a style=" position:absolute; z-index: 999; top:1 px; right: 1px;" class="btn btn-secondary" id="download" download="graph.png" href="" onclick="download_img(this);"><i class="fas fa-download"></i> Graph Image</a>
+	</div>
+	<div id="mynetwork"></div>
+
+
+	<table id=details class="table table-condensed" style="border-collapse:collapse;">
+		<thead>
+			<tr>
+				<th>Address</th>
+				<th>Hostname</th>
+				<th>Device</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr id="placeholder"><td>Select a host for more information.</td></tr>
+
+			{% for key, data in hosts.items() %}
+			{% if data["is_up"] %}								
+			<tr style="display:none;" id="{{ key.replace('.', '-') }}">
+				<td>{{ key }}</td>
+				<td>{{ data["hostnames"][0] }}</td>
+				{% if data["osmatch"] %}
+				<td>{{ data["osmatch"][0][0] }}</td>
+				{% else %}
+				<td></td>
+				{% endif %}
+				{% endif %}
+				{% endfor %}
+			</tbody>
+		</table>
+		<div class="card">
+			<div class="card-header">
+				Services
+			</div>
+
+			<div class="card-body">
+				{% for key, data in hosts.items() %}
+
+				{% if data["services"] %}								
+
+				<table style="width:100%;display:none;" id="{{ key.replace('.', '-') }}-services">
+					<thead>
+						<tr class="table-active">
+							{% for key, value in data["services"][0].items() %}
+
+							<th>{{ key }}</th>
+
+							{% endfor %}
+						</tr>
+					</thead>
+					{% for service in data["services"] %}
+					<tr>
+						{% for _, value in service.items() %}
+						<td>{{ value }}</td>
+						{% endfor %}
+					</tr>
+					{% endfor %}
+
+				</table>	
+				{% else %}
+				<p id="{{ key.replace('.', '-') }}-services"></p>
+				{% endif %}
+				{% endfor %}									
+			</div>
+		</div>
+		<br>
+	</main>
+
+<script> // create an array with nodes
+var nodes= {{ nodes | safe }};
+// create an array with edges
+var edges= {{ edges | safe }};
+// create a network
+var container=document.getElementById('mynetwork');
+var data= {
+	nodes: nodes, edges: edges
+};
+
+var gravitationalConstant = nodes.length * -100;
+
+var options = {
+	interaction:{
+		'navigationButtons': true,
+		'zoomView': false
+	},
+	"edges": {
+		"smooth": {
+			"forceDirection": "none"
+		}
+	},
+	"physics": {
+		"barnesHut": {
+			"gravitationalConstant": gravitationalConstant
+		},
+		"minVelocity": 0.75
+	}
+};
+
+var network=new vis.Network(container, data, options);
+
+function displayNodeData(node_id) {
+	var node_id_normalised = node_id.split(".").join("-");
+	var rows = document.getElementById("details").getElementsByTagName("tr");
+
+  // start at 1 so we do not modify the header
+  for(var i=1;i<rows.length;i++){
+  	var nodeHostName = rows[i].id;
+  	if (nodeHostName == node_id_normalised && node_id_normalised != "127-0-0-1"){
+  		rows[i].style.display = "";
+  	} else if (nodeHostName != "127-0-0-1") {
+  		rows[i].style.display = "none";
+  	}
+  }
+  
+  for(var i = 0; i < nodes.length; i++) {
+  	var node = nodes[i];
+  	var current_node_normalised = node.id.split(".").join("-")
+  	var nodeServiceName = current_node_normalised + "-services";
+
+  	if (current_node_normalised == node_id_normalised && node_id_normalised != "127-0-0-1"){
+  		document.getElementById(nodeServiceName).style.display = "";
+  	} else if (nodeServiceName != "127-0-0-1-services") {
+  		document.getElementById(nodeServiceName).style.display = "none";
+  	}
+  }
+}
+
+download_img = function(el) {
+	var ctx = network.canvas.getContext('2d');
+	ctx.globalCompositeOperation = 'destination-over'
+	ctx.fillStyle = "white";
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	var image = ctx.canvas.toDataURL("image/png");
+	ctx.globalCompositeOperation = "source-over";
+
+	el.href = image;
+};
+
+network.on("select", function (params) {
+	if (params.nodes.length == 1){
+		displayNodeData(params.nodes[0]);
+	}
+});
+network.on("dragStart", function (params) {
+	if (params.nodes.length == 1){
+		displayNodeData(params.nodes[0]);
+	}
+});
+</script>
+{% endblock %}

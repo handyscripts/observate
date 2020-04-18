@@ -1,0 +1,112 @@
+<style>
+	.hiddenRow {
+		padding: 0 !important;
+	}
+</style>
+
+<div class="tab-content">
+	<div id="menu_all" class="container tab-pane active">
+		<br> {% if hosts == {} %}
+		<p>No hosts found.</p>
+		{% else %}
+		<table class="table table-condensed" style="border-collapse:collapse;">
+			<thead>
+				<tr>
+					<th>Address</th>
+					<th>Hostname</th>
+					<th>Device</th>
+					<th>Ports</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for key, data in hosts.items() %}
+					{% if data["is_up"] %}								
+						{% if data["services"] or data["osmatch"] %}								
+							<tr style="cursor: pointer;" data-toggle="collapse" data-target="#key-{{ key.replace('.', '-') }}" class="accordion-toggle">
+						{% else %}
+							<tr  data-toggle="collapse" data-target="#key-{{ key.replace('.', '-') }}" class="accordion-toggle">
+						{% endif %}
+							<td>{{ key }}</td>
+							<td>{{ data["hostnames"][0] }}</td>
+							{% if data["osmatch"] %}
+							<td>{{ data["osmatch"][0][0] }}</td>
+					{% else %}
+						<td></td>
+					{% endif %}
+					{% if data["services"] %}
+						<td><i class="fas fa-check"></i></td>
+					{% else %}
+						<td><i class="fas fa-times"></td>
+					{% endif %}
+							</tr>
+							{% if data["services"] or data["osmatch"] %}
+								<tr> 
+									<td colspan="6" class="hiddenRow">
+										<div class="accordian-body collapse" id="key-{{ key.replace('.', '-') }}">
+
+											<div class="card">
+												<div class="card-header">
+													Details
+												</div>
+												{% if data["services"] %}								
+													<div class="card-body">
+														<table style="width:100%">
+															<thead>
+																<tr class="table-active">
+																	{% for key, value in data["services"][0].items() %}
+																		<th>{{ key }}</th>
+																	{% endfor %}
+																</tr>
+															</thead>
+															{% for service in data["services"] %}
+																<tr>
+																	{% for _, value in service.items() %}
+																		<td>{{ value }}</td>
+																	{% endfor %}
+																</tr>
+															{% endfor %}
+														</table>										
+													</div>
+												{% endif %}
+												{% if data["osmatch"] %}
+													<div class="card-body">
+														<table style="width:100%">
+															<thead>
+																<tr class="table-active">
+																	<th>Operating System Match</th>
+																	<th>Accuracy (%)</th>
+																</tr>
+															</thead>
+															{% for osmatch, accuracy in data["osmatch"] %}
+																<tr>
+																	<td>{{ osmatch }}</td>
+																	<td>{{ accuracy }}</td>
+																</tr>
+															{% endfor %}
+														</table>										
+													</div>								
+												{% endif %}
+											</div>
+										</div>
+									</td>					
+								</tr>
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+			</tbody>
+		</table>
+		{% endif %}
+			</div>
+			<div id="menu_about" class="container tab-pane fade">
+				<br>
+				<table class="table table-striped">
+					<tbody>
+						{% for key, value in stats.items() %}
+						<tr>
+							<th>{{ key }}</th>
+							<td>{{ value }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>

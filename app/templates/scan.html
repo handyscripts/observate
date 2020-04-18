@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card-deck">
+  <div class="card bg-light">
+    <div class="card-body text-center">		
+      <h2 class="card-text">{{ stats['hosts_up'] }} Devices</h2>
+    </div>
+  </div>
+  <div class="card bg-light">
+    <div class="card-body text-center">
+      <h2 class="card-text">{{ stats['elapsed'] }}s</h2>
+    </div>
+  </div>
+  <div class="card bg-light">
+    <div class="card-body text-center">
+      <a href="/graph/{{ filename }}" class="btn btn-success">Graph</a>
+    </div>
+  </div>
+</div>
+
+<br>
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" data-toggle="tab" href="#menu_all">All</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#menu_about">About</a>
+  </li>
+</ul>
+
+{% include 'tab-content.html' %}
+{% endblock %}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        {% block title %}Observate - Network Aware{% endblock %}
+    </title>
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='share.png') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    {{ fontawesome_html() }}
+</head>
+<header>
+    {% include 'navbar.html' %}
+</header>
+    <body>
+        </br>
+        <main role="main" class="container">
+            {% block content %}
+                <h1>content</h1>
+                <p>content</p>
+            {% endblock %}
+			
+            {% block footer %}
+        		{% include 'footer.html' %}
+            {% endblock %}
+        </main>
+    </body>
+</html>
