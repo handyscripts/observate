@@ -15,14 +15,14 @@ nmap -oX out.xml -O <hosts>
 
 ## Quick Start
 ```
-docker run --name observate -p 80:80 handyscripts/observate
+docker run -d --name observate -p 80:80 handyscripts/observate
 ```
 
 ## Docker Build and Deploy
 
 ```
 docker build -t observate .
-docker run --name observate -p 80:80 observate
+docker run -d --name observate -p 80:80 observate
 ```
 
 ## Development 
