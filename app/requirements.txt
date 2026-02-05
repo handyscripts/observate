@@ -1,5 +1,5 @@
 wheel==0.46.2
 Flask==2.2.5
-Werkzeug==3.0.6
+Werkzeug==3.1.5
 python-libnmap==0.7.3
 Flask-FontAwesome==0.1.4
